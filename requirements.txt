@@ -1,0 +1,3 @@
+flask
+torch
+stable-video-diffusion[torch]
