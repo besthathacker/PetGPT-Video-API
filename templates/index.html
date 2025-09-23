@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Team Pet Sitting</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background-color: #f0f8ff;
+  }
+  .container {
+    padding: 1rem;
+    max-width: 500px;
+    margin: auto;
+  }
+  h1 { text-align: center; }
+
+  /* Booking Form */
+  form { display: flex; flex-direction: column; gap: 0.5rem; }
+  input, button { padding: 0.5rem; font-size: 1rem; }
+  button { cursor: pointer; background-color: #4CAF50; color: white; border: none; }
+
+  /* Chat Bubble */
+  #chatBubble {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px; height: 60px;
+    background-color: #ffcc00;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    font-size: 1.5rem;
+  }
+  #chatWindow {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  #chatMessages {
+    flex: 1;
+    padding: 0.5rem;
+    overflow-y: auto;
+    font-size: 0.9rem;
+  }
+  #chatInput {
+    display: flex;
+    border-top: 1px solid #ccc;
+  }
+  #userInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1rem;
+  }
+  #sendBtn {
+    padding: 0.5rem;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Dream Team Pet Sitting Booking</h1>
+  <form id="bookingForm">
+    <input type="email" name="email" placeholder="Your Email" required>
+    <input type="text" name="phone" placeholder="Phone Number" required>
+    <input type="text" name="service" placeholder="Service Required" required>
+    <input type="text" name="postal_code" placeholder="Postal Code" required>
+    <button type="submit">Book Now</button>
+  </form>
+  <div id="bookingResult"></div>
+</div>
+
+<!-- Chat Bubble -->
+<div id="chatBubble">🐾</div>
+
+<!-- Chat Window -->
+<div id="chatWindow">
+  <div id="chatMessages"></div>
+  <div id="chatInput">
+    <input type="text" id="userInput" placeholder="Talk to PetGPT or type search: ...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script type="module">
+import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@latest';
+
+let generator;
+const chatMessages = document.getElementById('chatMessages');
+const userInput = document.getElementById('userInput');
+
+// Load GPT-2
+(async () => {
+  addMessage("System", "Loading AI model...");
+  generator = await pipeline('text-generation', 'Xenova/gpt2');
+  addMessage("System", "PetGPT ready! 🐾");
+})();
+
+function addMessage(sender, text) {
+  const msg = document.createElement('div');
+  msg.textContent = sender + ": " + text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Booking Form
+document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = new URLSearchParams(formData);
+  try {
+    const res = await fetch("/booking", { method: "POST", body: data });
+    const text = await res.text();
+    document.getElementById('bookingResult').textContent = text;
+    e.target.reset();
+  } catch(err) {
+    document.getElementById('bookingResult').textContent = "Error sending booking.";
+  }
+});
+
+// Chat Bubble
+document.getElementById('chatBubble').addEventListener('click', () => {
+  const chatWindow = document.getElementById('chatWindow');
+  chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+});
+
+// Chat send
+document.getElementById('sendBtn').addEventListener('click', async () => {
+  const text = userInput.value.trim();
+  if (!text) return;
+  addMessage("You", text);
+
+  if (text.toLowerCase().startsWith("search:")) {
+    const query = text.replace("search:", "").trim();
+    addMessage("PetGPT", "Searching the web for: " + query);
+
+    try {
+      const res = await fetch("https://api.duckduckgo.com/?q=" + encodeURIComponent(query) + "&format=json&no_html=1");
+      const data = await res.json();
+      if (data.AbstractText) {
+        addMessage("PetGPT", data.AbstractText);
+      } else {
+        addMessage("PetGPT", "No summary found. Try another query!");
+      }
+    } catch (err) {
+      addMessage("PetGPT", "Search failed: " + err.message);
+    }
+
+  } else {
+    if (!generator) {
+      addMessage("PetGPT", "Model not loaded yet!");
+      return;
+    }
+    const output = await generator(text, { max_new_tokens: 50 });
+    addMessage("PetGPT", output[0].generated_text);
+  }
+
+  userInput.value = '';
+});
+</script>
+
+</body>
+</html>
