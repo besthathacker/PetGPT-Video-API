@@ -5,7 +5,12 @@ homeassistant:
   elevation: 76
   unit_system: metric
   time_zone: America/Toronto
-
-mqtt:
+  http:
+  use_x_forwarded_for: true trusted_proxies:
+  - 0.0.0.0/0
+  ip_ban_enabled: true 
+  login_attempts_threshold: 5
+  mqtt:
   broker: mqtt
   port: 1883
+  external_url: homeassistant.onrender.com
