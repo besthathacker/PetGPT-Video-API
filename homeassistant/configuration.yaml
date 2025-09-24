@@ -1,0 +1,11 @@
+homeassistant:
+  name: Home
+  latitude: 43.7
+  longitude: -79.4
+  elevation: 76
+  unit_system: metric
+  time_zone: America/Toronto
+
+mqtt:
+  broker: mqtt
+  port: 1883
