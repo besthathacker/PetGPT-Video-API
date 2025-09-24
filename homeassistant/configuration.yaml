@@ -12,7 +12,7 @@ homeassistant:
   mqtt:
   broker: mqtt
   port: 8123
-  external_url: homeassistant.onrender.com
+  external_url: https://homeassistant-3avi.onrender.com/
   
 http:
   use_x_forwarded_for: true
