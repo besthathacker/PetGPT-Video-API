@@ -8,9 +8,16 @@ homeassistant:
   http:
   use_x_forwarded_for: true trusted_proxies:
   - 0.0.0.0/0
-  ip_ban_enabled: true 
-  login_attempts_threshold: 5
+  ssl_profile: intermediate
   mqtt:
   broker: mqtt
   port: 8123
   external_url: homeassistant.onrender.com
+  
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 0.0.0.0/0
+  server_host: 0.0.0.0
+  # Force Home Assistant to treat traffic as HTTPS even behind the proxy
+  ssl_profile: intermediate
