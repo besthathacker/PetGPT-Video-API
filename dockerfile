@@ -8,4 +8,4 @@ ENV TZ=America/Toronto
 EXPOSE 8123
 
 # Start Home Assistant using Render's PORT env variable
-CMD python3 -m homeassistant --config /config --server-port ${PORT:-8123}
+CMD python3 -m homeassistant --config /config
