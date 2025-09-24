@@ -9,7 +9,7 @@ services:
     environment:
       - TZ=America/Toronto
     ports:
-      - "8123:8123"
+      - "8123"
     depends_on:
       - mqtt
       - nodered
