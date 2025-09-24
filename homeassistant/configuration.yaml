@@ -12,5 +12,5 @@ homeassistant:
   login_attempts_threshold: 5
   mqtt:
   broker: mqtt
-  port: 1883
+  port: 8123
   external_url: homeassistant.onrender.com
