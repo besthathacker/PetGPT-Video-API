@@ -7,7 +7,7 @@ homeassistant:
   time_zone: America/Toronto
   http:
   use_x_forwarded_for: true trusted_proxies:
-  - 0.0.0.0/0
+  - 10.0.0.0/8
   ssl_profile: intermediate
   trusted_hosts:
     https://homeassistant-3avi.onrender.com/
@@ -19,7 +19,7 @@ homeassistant:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 0.0.0.0/0
+    - 10.0.0.0/8
   server_host: 0.0.0.0
   # Force Home Assistant to treat traffic as HTTPS even behind the proxy
   ssl_profile: intermediate
