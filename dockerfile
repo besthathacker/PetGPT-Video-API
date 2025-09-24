@@ -1,14 +1,11 @@
-# Use the official Home Assistant Core image as base
+# Use the official Home Assistant Core image
 FROM ghcr.io/home-assistant/home-assistant:stable
 
-# Set timezone (optional, change to yours)
+# Set timezone (change if needed)
 ENV TZ=America/Toronto
 
-# Create a volume for configs (Render persistent disk can mount here)
-VOLUME /config
-
-# Expose Home Assistant’s default port
+# Expose the port (Render maps $PORT automatically)
 EXPOSE 8123
 
-# Run Home Assistant
-CMD [ "python3", "-m", "homeassistant", "--config", "/config" ]
+# Start Home Assistant using Render's PORT env variable
+CMD python3 -m homeassistant --config /config --server-port ${PORT:-8123}
